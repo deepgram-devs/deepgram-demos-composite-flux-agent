@@ -15,18 +15,7 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Configuration - Set your API keys as environment variables
-DEEPGRAM_API_KEY = os.environ.get("DEEPGRAM_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 AUDIO_FILE = "audio/spacewalk_linear16.wav"  # Your audio file. Must be linear16.
-
-if not DEEPGRAM_API_KEY:
-    print("❌ Please set DEEPGRAM_API_KEY environment variable")
-    sys.exit(1)
-
-if not OPENAI_API_KEY:
-    print("❌ Please set OPENAI_API_KEY environment variable")
-    sys.exit(1)
 
 async def main():
     """Main demo function."""
@@ -51,9 +40,9 @@ async def main():
     from deepgram.core.events import EventType
     from deepgram.extensions.types.sockets import ListenV2SocketClientResponse, SpeakV1SocketClientResponse, SpeakV1ControlMessage, ListenV2MediaMessage, SpeakV1TextMessage
 
-    client = DeepgramClient(api_key=DEEPGRAM_API_KEY)
+    client = DeepgramClient() # The API key retrieval happens automatically in the constructor
 
-    # Step 1: Transcribe with Flux
+    # Transcribe with Flux
     print("\n🎤 Transcribing with Flux...")
     transcript = ""
     done = asyncio.Event()
@@ -86,7 +75,7 @@ async def main():
         print("❌ No transcript received")
         return
 
-    # Step 2: Generate OpenAI response
+    # Generate OpenAI response
     print("\n🤖 Generating OpenAI response...")
 
     # Direct HTTP request to OpenAI API
@@ -104,7 +93,7 @@ async def main():
         "https://api.openai.com/v1/chat/completions",
         data=json.dumps(openai_data).encode(),
         headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "Authorization": f"Bearer {os.environ.get('OPENAI_API_KEY')}",
             "Content-Type": "application/json"
         }
     )
@@ -119,7 +108,7 @@ async def main():
         response = f"I heard you say: {transcript}"  # Fallback
         print(f"✓ Fallback response: '{response}'")
 
-    # Step 3: Generate TTS
+    # Generate TTS Response
     print("\n🔊 Generating TTS...")
     tts_audio = []
     tts_done = asyncio.Event()
@@ -141,7 +130,7 @@ async def main():
         # Wait for TTS completion
         await asyncio.wait_for(tts_done.wait(), timeout=15.0)
 
-    # Step 4: Save TTS audio
+    # Save TTS audio
     if tts_audio:
         output_file = "audio/responses/agent_response.wav"
         combined_audio = b''.join(tts_audio)
