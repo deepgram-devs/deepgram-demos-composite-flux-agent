@@ -30,8 +30,7 @@ The application follows this simple pipeline:
 
 1. Install the required packages:
    ```bash
-   pip install deepgram-sdk
-   pip install python-dotenv
+   pip install deepgram-sdk python-dotenv
    ```
 
 ## Running the Demo
