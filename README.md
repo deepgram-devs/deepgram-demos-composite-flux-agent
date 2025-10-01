@@ -1,4 +1,4 @@
-# Deepgram Flux Agent - Terminal Demo
+# Deepgram Flux Composite Agent
 
 A simple terminal-based Python application that demonstrates the Deepgram Flux API integrated with OpenAI and Deepgram TTS. This demo processes a static audio file and creates a basic agent experience entirely in the terminal.
 
